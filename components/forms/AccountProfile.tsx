@@ -21,6 +21,8 @@ import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
 import { isBase64Image } from "@/lib/utils";
 import { useUploadThing } from "@/lib/uploadthing";
+import { usePathname, useRouter } from "next/navigation";
+import { updateUser } from "@/lib/actions/user.actions";
 
 interface Props {
   user: {
@@ -37,6 +39,8 @@ interface Props {
 const AccountProfile = ({ user, btnTitle }: Props) => {
   const [files, setFiles] = useState<File[]>([]);
   const { startUpload } = useUploadThing("media");
+  const router = useRouter();
+  const pathname = usePathname();
 
   const form = useForm({
     resolver: zodResolver(UserValidation),
@@ -74,19 +78,35 @@ const AccountProfile = ({ user, btnTitle }: Props) => {
   };
 
   const onSubmit = async (values: z.infer<typeof UserValidation>) => {
+    console.log("here -1");
     const blob = values.profile_photo;
-
+    console.log("here 0");
     const hasImageChanged = isBase64Image(blob);
+    console.log("here 1");
 
     if (hasImageChanged) {
+      console.log("here 3");
       const imgRes = await startUpload(files);
-
+      console.log("here 4");
       if (imgRes && imgRes[0].url) {
         values.profile_photo = imgRes[0].url;
       }
     }
 
-    //TODO: Update user profile
+    await updateUser({
+      userId: user.id,
+      username: values.username,
+      name: values.name,
+      bio: values.bio,
+      image: values.profile_photo,
+      path: pathname,
+    });
+
+    if (pathname == "/profile/edit") {
+      router.back();
+    } else {
+      router.push("/");
+    }
   };
 
   return (
