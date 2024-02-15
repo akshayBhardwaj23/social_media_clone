@@ -3,7 +3,7 @@ import Comment from "@/components/forms/Comment";
 import React from "react";
 import { currentUser } from "@clerk/nextjs";
 import { fetchUser } from "@/lib/actions/user.actions";
-import { redirect } from "next/dist/server/api-utils";
+import { redirect } from "next/navigation";
 import { fetchThreadById } from "@/lib/actions/thread.actions";
 
 const page = async ({ params }: { params: { id: string } }) => {
