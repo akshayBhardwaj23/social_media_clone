@@ -25,7 +25,7 @@ export async function createCommunity(
     if (!user) {
       throw new Error("User not found"); // Handle the case if the user with the id is not found
     }
-
+    
     const newCommunity = new Community({
       id,
       name,
@@ -36,7 +36,7 @@ export async function createCommunity(
     });
 
     const createdCommunity = await newCommunity.save();
-
+    
     // Update User model
     user.communities.push(createdCommunity._id);
     await user.save();
